@@ -1,9 +1,12 @@
 import tkinter as tk
 from tkinter import messagebox
 from database import init_db, validate_user
+from client_module import open_client_window   # VERY IMPORTANT
 
-# Database initialize
+
+# Initialize database
 init_db()
+
 
 # Login Function
 def login():
@@ -18,18 +21,33 @@ def login():
     else:
         messagebox.showerror("Error", "Invalid Username or Password")
 
-# Dashboard window
+
+# Dashboard Window
 def open_dashboard(username):
     dash = tk.Tk()
     dash.title("Zimafa Interior Designs - Dashboard")
-    dash.geometry("400x300")
+    dash.geometry("400x350")
 
-    label = tk.Label(dash, text=f"Welcome {username}", font=("Arial", 14))
+    label = tk.Label(dash, text=f"Welcome {username}", font=("Arial", 16))
     label.pack(pady=20)
+
+    # ---------- CLIENT MODULE BUTTON ----------
+    btn_client = tk.Button(
+        dash,
+        text="Client Management",
+        width=20,
+        bg="#0077E6",
+        fg="white",
+        command=open_client_window
+    )
+    btn_client.pack(pady=15)
 
     dash.mainloop()
 
-# Tkinter Login Window
+
+# ------------------------
+# LOGIN WINDOW
+# ------------------------
 root = tk.Tk()
 root.title("Zimafa Interior Designs - Login")
 root.geometry("350x250")
@@ -47,7 +65,8 @@ label_pass.pack()
 entry_password = tk.Entry(root, show="*", width=25)
 entry_password.pack(pady=5)
 
-btn_login = tk.Button(root, text="Login", width=15, command=login, bg="#4CAF50", fg="white")
+btn_login = tk.Button(root, text="Login", width=15,
+                      command=login, bg="#4CAF50", fg="white")
 btn_login.pack(pady=15)
 
 root.mainloop()
