@@ -1,38 +1,43 @@
 import sqlite3
 
+def get_connection():
+    return sqlite3.connect("zimafa.db")
+
 def init_db():
-    conn = sqlite3.connect("zimafa.db")
+    conn = get_connection()
     cur = conn.cursor()
 
-    # User table உருவாக்கம்
-    cur.execute('''CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    username TEXT UNIQUE NOT NULL,
-                    password TEXT NOT NULL,
-                    role TEXT NOT NULL
-                )''')
+    # DON'T DELETE THE TABLE — Remove DROP statement permanently!
+    
+    # CREATE CLIENT TABLE (only if not exists)
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS clients (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            mobile TEXT,
+            email TEXT,
+            address TEXT
+        )
+    """)
 
-    # Default admin user
-    cur.execute("SELECT * FROM users WHERE username=?", ("admin",))
-    if not cur.fetchone():
-        cur.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
-                    ("admin", "admin123", "admin"))
+    # USER TABLE
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE,
+            password TEXT
+        )
+    """)
 
-    # Client table உருவாக்கம்
-    cur.execute('''CREATE TABLE IF NOT EXISTS clients (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL,
-                    phone TEXT NOT NULL,
-                    email TEXT,
-                    address TEXT
-                )''')
+    # DEFAULT USER
+    cur.execute("INSERT OR IGNORE INTO users (username, password) VALUES ('admin', 'admin')")
 
     conn.commit()
     conn.close()
 
 
 def validate_user(username, password):
-    conn = sqlite3.connect("zimafa.db")
+    conn = get_connection()
     cur = conn.cursor()
     cur.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
     user = cur.fetchone()
